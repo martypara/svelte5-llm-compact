@@ -9,10 +9,6 @@ This was made for my personal use but shared for anyone needing a lightweight Sv
 - **Official Small LLM Version**: ~130,000 tokens, ~528,500 characters
 - **Official Full LLM Version**: ~222,630 tokens, ~874,000 characters
 
-## Disadvantages
-- Barely any full code examples
-- Loses some edge cases and nuances
-- Bareley human-readable
-- Excludes specific sections (see above)
+Loses some edge cases and nuances!
 
 There is more potential to reduce and maybe more room to add important context back in.
