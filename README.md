@@ -15,7 +15,6 @@ Each file is standalone and scoped:
 - [svelte5_runes.txt](./svelte5_runes.txt) — `$state`, `$effect`, `$derived`, `$bindable`, `$props`, `$host`, `$inspect`
 - [svelte5_events.txt](./svelte5_events.txt) — event handling, callback props, modifiers, bubbling
 - [svelte5_snippets.txt](./svelte5_snippets.txt) — Svelte 5 snippets (`{#snippet}`, `{@render}`), slot replacement
-- [svelte5_template_syntax.txt](./svelte5_template_syntax.txt) — markup, bindings, conditionals, loops, dynamic content
 - [svelte5_typescript.txt](./svelte5_typescript.txt) — typing props, components, DOM attributes
 - [svelte_4-5_migration_guide.txt](./svelte_4-5_migration_guide.txt) — what changed from Svelte 4 to 5
 - [svelte5_full_context.txt](./svelte5_full_context.txt) — everything above in one file (14k tokens, works decently with most SOTA models)
