@@ -1,0 +1,346 @@
+# Svelte 5 Event Handling
+
+<!-- ================================== -->
+<!-- Example 1: Basic Event Handling -->
+<!-- ================================== -->
+
+**Svelte 5 replaces `on:` directives with direct property bindings for event handlers.**
+
+---
+
+<!-- Filename: App.svelte -->
+```svelte
+<script>
+	let count = $state(0);
+
+	function onclick() {
+		count++;
+	}
+</script>
+
+<button {onclick}>
+	clicks: {count}
+</button>
+```
+
+**Key changes**:
+- Removed `on:click`, replacing it with `{onclick}` as a property.
+- Uses a named function (`onclick`) instead of inline arrow functions.
+
+---
+
+<!-- ================================== -->
+<!-- Example 2: Component Event Callbacks -->
+<!-- ================================== -->
+
+**In Svelte 5, components no longer use `createEventDispatcher()`. Instead, they accept callback props.**
+
+---
+
+<!-- Filename: Pump.svelte -->
+```svelte
+<script lang="ts">
+	let { inflate, deflate } = $props(); // Props passed from parent
+	let power = $state(5);
+</script>
+
+<button onclick={() => inflate(power)}>inflate</button>
+<button onclick={() => deflate(power)}>deflate</button>
+<button onclick={() => power--}>-</button>
+Pump power: {power}
+<button onclick={() => power++}>+</button>
+```
+
+---
+
+<!-- Filename: App.svelte -->
+```svelte
+<script lang="ts">
+	import Pump from './Pump.svelte';
+
+	let size = $state(15);
+	let burst = $state(false);
+
+	function inflateHandler(power) {
+		size += power;
+		if (size > 75) burst = true;
+	}
+
+	function deflateHandler(power) {
+		if (size > 0) size -= power;
+	}
+
+	function reset() {
+		size = 15;
+		burst = false;
+	}
+</script>
+
+<Pump inflate={inflateHandler} deflate={deflateHandler} />
+
+{#if burst}
+	<button onclick={reset}>new balloon</button>
+	<span class="boom">💥</span>
+{:else}
+	<span class="balloon" style="scale: {0.01 * size}">
+		🎈
+	</span>
+{/if}
+```
+
+**Key changes**:
+- Removed `createEventDispatcher()`, instead using callback props (`inflate`, `deflate`).
+- Events are now just function calls inside `Pump.svelte`.
+- **Parent (App.svelte)** passes handlers like `inflateHandler` to `Pump`.
+
+---
+
+<!-- ================================== -->
+<!-- Example 3: Bubbling Events with Callback Props -->
+<!-- ================================== -->
+
+**To forward an event from an element to a component, use callback props instead of `on:`.**
+
+---
+
+<!-- Filename: Clickable.svelte -->
+```svelte
+<script>
+	let { onclick } = $props(); // Accepts an `onclick` function from parent
+</script>
+
+<button {onclick}>
+	click me
+</button>
+```
+
+**Key changes**:
+- No need to manually forward events like `on:click` → `{onclick}` does the job.
+
+---
+
+<!-- ================================== -->
+<!-- Example 4: Spreading Props Including Event Handlers -->
+<!-- ================================== -->
+
+**Instead of manually listing every event, just spread props.**
+
+---
+
+<!-- Filename: Button.svelte -->
+```svelte
+<script>
+	let props = $props();
+</script>
+
+<button {...props}>
+	click me
+</button>
+```
+
+**Key changes**:
+- `{...props}` automatically applies all attributes, including event handlers like `onclick`.
+
+---
+
+<!-- ================================== -->
+<!-- Example 5: Multiple Event Handlers on the Same Element -->
+<!-- ================================== -->
+
+**Instead of duplicate event bindings, combine handlers manually.**
+
+---
+
+<!-- Filename: App.svelte -->
+```svelte
+<script>
+	function one(event) {
+		console.log('First handler', event);
+	}
+
+	function two(event) {
+		console.log('Second handler', event);
+	}
+</script>
+
+<button
+	onclick={(e) => {
+		one(e);
+		two(e);
+	}}
+>
+	...
+</button>
+```
+
+**Key changes**:
+- Instead of multiple `on:click={one} on:click={two}`, handlers are manually merged.
+
+---
+
+<!-- ================================== -->
+<!-- Example 6: Preventing Local Handlers from Being Overwritten -->
+<!-- ================================== -->
+
+**Ensure that when spreading props, local event handlers still execute.**
+
+---
+
+<!-- Filename: App.svelte -->
+```svelte
+<script>
+	let props = $props();
+
+	function doStuff(event) {
+		console.log('Handled locally', event);
+	}
+</script>
+
+<button
+	{...props}
+	onclick={(e) => {
+		doStuff(e);
+		props.onclick?.(e);
+	}}
+>
+	...
+</button>
+```
+
+**Key changes**:
+- The local `onclick` executes **before** the `props.onclick`, preventing overwrites.
+
+---
+
+<!-- ================================== -->
+<!-- Example 7: Event Modifiers as Functions -->
+<!-- ================================== -->
+
+**Modifiers like `once` and `preventDefault` should now be implemented manually.**
+
+---
+
+<!-- Filename: App.svelte -->
+```svelte
+<script>
+	function once(fn) {
+		return function (event) {
+			if (fn) fn.call(this, event);
+			fn = null; // Ensures it only runs once
+		};
+	}
+
+	function preventDefault(fn) {
+		return function (event) {
+			event.preventDefault();
+			fn.call(this, event);
+		};
+	}
+
+	function handler(event) {
+		console.log('Button clicked');
+	}
+</script>
+
+<button onclick={once(preventDefault(handler))}>
+	...
+</button>
+```
+
+**Key changes**:
+- Used **higher-order functions** to replace `on:click|once|preventDefault={handler}`.
+
+---
+---
+
+// svelte/events - `on` function
+// `on` attaches an event handler and returns a cleanup function.
+// It ensures correct handler order compared to `addEventListener`.
+
+import { on } from 'svelte/events';
+
+// Attach an event to `window`
+function on<Type extends keyof WindowEventMap>(
+    window: Window,
+    type: Type,
+    handler: (this: Window, event: WindowEventMap[Type]) => any,
+    options?: AddEventListenerOptions
+): () => void;
+
+// Attach an event to `document`
+function on<Type extends keyof DocumentEventMap>(
+    document: Document,
+    type: Type,
+    handler: (this: Document, event: DocumentEventMap[Type]) => any,
+    options?: AddEventListenerOptions
+): () => void;
+
+// Attach an event to an `HTMLElement`
+function on<Element extends HTMLElement, Type extends keyof HTMLElementEventMap>(
+    element: Element,
+    type: Type,
+    handler: (this: Element, event: HTMLElementEventMap[Type]) => any,
+    options?: AddEventListenerOptions
+): () => void;
+
+// Attach an event to a `MediaQueryList`
+function on<Element extends MediaQueryList, Type extends keyof MediaQueryListEventMap>(
+    element: Element,
+    type: Type,
+    handler: (this: Element, event: MediaQueryListEventMap[Type]) => any,
+    options?: AddEventListenerOptions
+): () => void;
+
+// Generic event attachment
+function on(
+    element: EventTarget,
+    type: string,
+    handler: EventListener,
+    options?: AddEventListenerOptions
+): () => void;
+
+---
+---
+
+Use `on:eventname={handler}` to attach handlers (e.g., `onclick={() => ...}`).
+- Handlers can mutate `$state` directly; UI updates automatically.
+- Shorthand `{eventname}` works if the handler is a variable or function.
+- Events like `click`, `input`, etc., are delegated; assume bubbling unless stopped.
+- Events fire after bindings (e.g., `oninput` after `bind:value`).
+- Case-sensitive: `onclick` ≠ `onClick` (custom events may use uppercase).
+
+<script>
+  let count = $state(0);         // Reactive state
+  let text = $state('');         // Input value
+  const logClick = () => console.log('Clicked!'); // Named handler
+  
+  // $effect to react to state changes
+  $effect(() => console.log(`Count is now ${count}`));
+</script>
+
+<!-- Inline handler with $state -->
+<button onclick={() => count++}>
+  Increment: {count}
+</button>
+
+<!-- Shorthand with named handler -->
+<button {logClick}>
+  Log Click
+</button>
+
+<!-- Input event with binding -->
+<input
+  oninput={(e) => text = e.target.value}
+  bind:value={text}
+  placeholder="Type here"
+/>
+<p>You typed: {text}</p>
+
+<!-- Keydown event with condition -->
+<input
+  onkeydown={(e) => e.key === 'Enter' && count++}
+  placeholder="Press Enter to increment"
+/>
+
+Note: For other events (e.g., `onmouseover`, `onfocus`), follow the same pattern:
+`on:eventname={() => ...}` or `{eventname}`. Adjust the handler logic based on the event’s purpose.

@@ -1,0 +1,205 @@
+# Svelte 5 + TypeScript
+
+<!-- ================================== -->
+<!-- Example 1: Using TypeScript in Svelte Components -->
+<!-- ================================== -->
+
+<!-- Demonstrates basic TypeScript setup inside a Svelte component. -->
+
+---
+
+<!-- Filename: App.svelte -->
+<script lang="ts">
+	let name: string = 'world';
+
+	function greet(name: string) {
+		alert(`Hello, ${name}!`);
+	}
+</script>
+
+<button on:click={() => greet(name)}>Greet</button>
+
+---
+
+### Notes:
+- Adding `lang="ts"` enables TypeScript.
+- Type annotations (`string`) help with static checking.
+- No runtime overhead since TypeScript removes type annotations at compile time.
+
+---
+
+<!-- ================================== -->
+<!-- Example 2: Typing Component Props -->
+<!-- ================================== -->
+
+<!-- Shows how to type component props in Svelte. -->
+
+---
+
+<!-- Filename: Greeting.svelte -->
+<script lang="ts">
+	interface Props {
+		name: string;
+	}
+
+	let { name }: Props = $props();
+</script>
+
+<p>Hello, {name}!</p>
+
+---
+
+<!-- Filename: App.svelte -->
+<script lang="ts">
+	import Greeting from './Greeting.svelte';
+</script>
+
+<Greeting name="Alice" />
+
+---
+
+### Notes:
+- `Props` interface ensures `name` is always a string.
+- `$props()` extracts the component’s props with proper typing.
+
+---
+
+<!-- ================================== -->
+<!-- Example 3: Generic Component Props -->
+<!-- ================================== -->
+
+<!-- Demonstrates generic props for flexible typing. -->
+
+---
+
+<!-- Filename: List.svelte -->
+<script lang="ts" generics="Item">
+	interface Props {
+		items: Item[];
+		select: (item: Item) => void;
+	}
+
+	let { items, select }: Props = $props();
+</script>
+
+{#each items as item}
+	<button on:click={() => select(item)}>{item}</button>
+{/each}
+
+---
+
+<!-- Filename: App.svelte -->
+<script lang="ts">
+	import List from './List.svelte';
+
+	const names = ['Alice', 'Bob', 'Charlie'];
+
+	function handleSelect(name: string) {
+		console.log('Selected:', name);
+	}
+</script>
+
+<List items={names} select={handleSelect} />
+
+---
+
+### Notes:
+- `generics="Item"` allows the component to accept any item type.
+- Ensures `items` and `select` function operate on the same type.
+
+---
+
+<!-- ================================== -->
+<!-- Example 4: Typing $state -->
+<!-- ================================== -->
+
+<!-- Shows how to type state variables in Svelte. -->
+
+---
+
+<!-- Filename: Counter.svelte -->
+<script lang="ts">
+	let count: number = $state(0);
+
+	function increment() {
+		count += 1;
+	}
+</script>
+
+<button on:click={increment}>Count: {count}</button>
+
+---
+
+### Notes:
+- `$state(0)` initializes a reactive variable with a type.
+- Without an initial value, TypeScript infers `number | undefined`.
+
+---
+
+<!-- ================================== -->
+<!-- Example 5: Typing Wrapper Components -->
+<!-- ================================== -->
+
+<!-- Demonstrates how to type wrapper components that extend native HTML elements. -->
+
+---
+
+<!-- Filename: Button.svelte -->
+<script lang="ts">
+	import type { HTMLButtonAttributes } from 'svelte/elements';
+
+	let { children, ...rest }: HTMLButtonAttributes = $props();
+</script>
+
+<button {...rest}>{@render children?.()}</button>
+
+---
+
+<!-- Filename: App.svelte -->
+<script lang="ts">
+	import Button from './Button.svelte';
+</script>
+
+<Button on:click={() => alert('Clicked!')}>Click Me</Button>
+
+---
+
+### Notes:
+- `HTMLButtonAttributes` ensures `Button.svelte` supports all standard button attributes.
+- `...rest` spreads remaining props onto the `<button>`.
+
+---
+
+<!-- ================================== -->
+<!-- Example 6: Typing Custom Events and Attributes -->
+<!-- ================================== -->
+
+<!-- Demonstrates how to extend built-in DOM types for custom attributes and events. -->
+
+---
+
+<!-- Filename: additional-svelte-typings.d.ts -->
+declare namespace svelteHTML {
+	interface IntrinsicElements {
+		'custom-element': { customProp: string; 'on:customEvent': (e: CustomEvent<any>) => void };
+	}
+}
+
+---
+
+<!-- Filename: App.svelte -->
+<script lang="ts">
+	function handleEvent(e: CustomEvent) {
+		console.log('Custom event:', e.detail);
+	}
+</script>
+
+<custom-element customProp="Hello" on:customEvent={handleEvent}></custom-element>
+
+---
+
+### Notes:
+- Extending `IntrinsicElements` allows TypeScript to recognize `<custom-element>` and its props.
+- Avoids TypeScript errors when using experimental or third-party web components.
+
+---

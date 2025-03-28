@@ -1,0 +1,340 @@
+# Svelte 5 Snippets
+
+<!-- ================================== -->
+<!-- Example 1: Basic Snippet Usage -->
+<!-- ================================== -->
+
+<!-- Demonstrates how to create and use a snippet to avoid repetitive markup -->
+
+---
+
+<!-- Filename: ImageList.svelte -->
+<script>
+	let images = [
+		{ src: "image1.jpg", caption: "Image 1", href: "https://example.com" },
+		{ src: "image2.jpg", caption: "Image 2" }
+	];
+</script>
+
+{#snippet figure(image)}
+	<figure>
+		<img src={image.src} alt={image.caption} />
+		<figcaption>{image.caption}</figcaption>
+	</figure>
+{/snippet}
+
+{#each images as image}
+	{#if image.href}
+		<a href={image.href}>
+			{@render figure(image)}
+		</a>
+	{:else}
+		{@render figure(image)}
+	{/if}
+{/each}
+
+---
+
+<!-- This example shows how snippets reduce duplication in templates -->
+
+<!-- ================================== -->
+<!-- Example 2: Snippet Scope and Visibility -->
+<!-- ================================== -->
+
+<!-- Demonstrates snippet scoping rules and visibility -->
+
+---
+
+<!-- Filename: ScopedSnippets.svelte -->
+<div>
+	{#snippet x()}
+		{#snippet y()}
+			<p>Inside y</p>
+		{/snippet}
+
+		<!-- Rendering `y` inside `x` is allowed -->
+		{@render y()}
+	{/snippet}
+
+	<!-- This will cause an error because `y` is out of scope -->
+	{@render y()}
+</div>
+
+<!-- This will also cause an error because `x` is out of scope -->
+{@render x()}
+
+---
+
+<!-- Notes: Snippets are only accessible within their lexical scope -->
+
+<!-- ================================== -->
+<!-- Example 3: Recursive Snippets -->
+<!-- ================================== -->
+
+<!-- Demonstrates how a snippet can reference itself -->
+
+---
+
+<!-- Filename: Countdown.svelte -->
+{#snippet blastoff()}
+	<span>🚀</span>
+{/snippet}
+
+{#snippet countdown(n)}
+	{#if n > 0}
+		<span>{n}...</span>
+		{@render countdown(n - 1)}
+	{:else}
+		{@render blastoff()}
+	{/if}
+{/snippet}
+
+{@render countdown(5)}
+
+---
+
+<!-- Recursive snippets are useful for countdowns, trees, and nested structures -->
+
+<!-- ================================== -->
+<!-- Example 4: Passing Snippets to Components -->
+<!-- ================================== -->
+
+<!-- Demonstrates passing snippets as props to a component -->
+
+---
+
+<!-- Filename: Table.svelte -->
+<script>
+	let { data, header, row } = $props();
+</script>
+
+<table>
+	<thead>
+		<tr>{@render header()}</tr>
+	</thead>
+	<tbody>
+		{#each data as item}
+			<tr>{@render row(item)}</tr>
+		{/each}
+	</tbody>
+</table>
+
+---
+
+<!-- Filename: App.svelte -->
+<script>
+	import Table from "./Table.svelte";
+
+	const fruits = [
+		{ name: "Apples", qty: 5, price: 2 },
+		{ name: "Bananas", qty: 10, price: 1 },
+		{ name: "Cherries", qty: 20, price: 0.5 }
+	];
+</script>
+
+{#snippet header()}
+	<th>Fruit</th>
+	<th>Qty</th>
+	<th>Price</th>
+	<th>Total</th>
+{/snippet}
+
+{#snippet row(d)}
+	<td>{d.name}</td>
+	<td>{d.qty}</td>
+	<td>{d.price}</td>
+	<td>{d.qty * d.price}</td>
+{/snippet}
+
+<Table data={fruits} {header} {row} />
+
+---
+
+<!-- Snippets allow passing reusable markup structures into components -->
+
+<!-- ================================== -->
+<!-- Example 5: Default Slot with Snippets -->
+<!-- ================================== -->
+
+<!-- Demonstrates how snippets replace slots in Svelte 5 -->
+
+---
+
+<!-- Filename: Button.svelte -->
+<script>
+	let { children } = $props();
+</script>
+
+<button>{@render children()}</button>
+
+---
+
+<!-- Filename: App.svelte -->
+<Button>Click Me</Button>
+
+---
+
+<!-- Any non-snippet content passed to a component becomes the `children` snippet -->
+
+<!-- ================================== -->
+<!-- Example 6: Optional Snippet Props -->
+<!-- ================================== -->
+
+<!-- Demonstrates handling optional snippet props -->
+
+---
+
+<!-- Filename: OptionalSnippet.svelte -->
+<script>
+	let { children } = $props();
+</script>
+
+{#if children}
+	{@render children()}
+{:else}
+	<p>Fallback content</p>
+{/if}
+
+---
+
+<!-- Filename: App.svelte -->
+<OptionalSnippet />
+<OptionalSnippet>
+	{#snippet children()}
+		<p>Custom content</p>
+	{/snippet}
+</OptionalSnippet>
+
+---
+
+<!-- Use `optional chaining` or `#if` blocks to handle missing snippets -->
+
+<!-- ================================== -->
+<!-- Example 7: Exporting Snippets -->
+<!-- ================================== -->
+
+<!-- Demonstrates exporting a snippet for use in other components -->
+
+---
+
+<!-- Filename: math.svelte -->
+<script module>
+	export { add };
+</script>
+
+{#snippet add(a, b)}
+	{a} + {b} = {a + b}
+{/snippet}
+
+---
+
+<!-- Filename: App.svelte -->
+<script>
+	import { add } from "./math.svelte";
+</script>
+
+{@render add(2, 3)}
+
+---
+
+<!-- Note: You can pass snippets to components that use slots, but not vice versa -->
+
+<!-- ================================== -->
+<!-- Example 8: Multiple Content Placeholders -->
+<!-- ================================== -->
+
+<!-- Demonstrates using multiple snippets instead of named slots -->
+
+---
+
+<!-- Filename: Layout.svelte -->
+<script>
+	let { header, main, footer } = $props();
+</script>
+
+<header>
+	{@render header?.()}
+</header>
+
+<main>
+	{@render main?.()}
+</main>
+
+<footer>
+	{@render footer?.()}
+</footer>
+
+---
+
+<!-- Filename: App.svelte -->
+<script>
+	import Layout from "./Layout.svelte";
+</script>
+
+<Layout>
+	{#snippet header()}
+		<h1>My Website</h1>
+	{/snippet}
+	
+	{#snippet main()}
+		<p>Welcome to my website!</p>
+	{/snippet}
+	
+	{#snippet footer()}
+		<p>© 2023 My Website</p>
+	{/snippet}
+</Layout>
+
+---
+
+
+<!-- ================================== -->
+<!-- Example 9: Passing Data to Parent with Snippets -->
+<!-- ================================== -->
+
+<!-- Demonstrates how snippets allow passing data from child to parent -->
+
+---
+
+<!-- Filename: List.svelte -->
+<script>
+	let { items, item, empty } = $props();
+</script>
+
+{#if items.length}
+	<ul>
+		{#each items as entry}
+			<li>
+				{@render item(entry)}
+			</li>
+		{/each}
+	</ul>
+{:else}
+	{@render empty?.()}
+{/if}
+
+---
+
+<!-- Filename: App.svelte -->
+<script>
+	import List from "./List.svelte";
+	
+	const fruits = ['Apple', 'Banana', 'Cherry'];
+</script>
+
+<List items={fruits}>
+	{#snippet item(fruit)}
+		<span>{fruit}</span>
+	{/snippet}
+	
+	{#snippet empty()}
+		<span>No fruits available</span>
+	{/snippet}
+</List>
+
+---
+
+<!-- 
+The child component passes data as parameters to the snippet function,
+which the parent can then access and use within the snippet definition.
+-->
