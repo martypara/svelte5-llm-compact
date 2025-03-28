@@ -12,13 +12,13 @@ This repo is a minimal, example-based reference focused on what changed in Svelt
 
 Each file is standalone and scoped:
 
-- `svelte5_runes_combined.txt` — `$state`, `$effect`, `$derived`, `$bindable`, `$props`, `$host`, `$inspect`
-- `svelte5_events_combined.txt` — event handling, callback props, modifiers, bubbling
-- `svelte5_snippets.txt` — Svelte 5 snippets (`{#snippet}`, `{@render}`), slot replacement
-- `svelte5_template_syntax.txt` — markup, bindings, conditionals, loops, dynamic content
-- `svelte5_typescript.txt` — typing props, components, DOM attributes
-- `svelte5_migration_svelte4to5.txt` — what changed from Svelte 4 to 5
-- `svelte5_full_context.txt` — everything above in one file (long, only use if you really need it)
+- [svelte5_runes_combined.txt](./svelte5_runes_combined.txt) — `$state`, `$effect`, `$derived`, `$bindable`, `$props`, `$host`, `$inspect`
+- [svelte5_events_combined.txt](./svelte5_events_combined.txt) — event handling, callback props, modifiers, bubbling
+- [svelte5_snippets.txt](./svelte5_snippets.txt) — Svelte 5 snippets (`{#snippet}`, `{@render}`), slot replacement
+- [svelte5_template_syntax.txt](./svelte5_template_syntax.txt) — markup, bindings, conditionals, loops, dynamic content
+- [svelte5_typescript.txt](./svelte5_typescript.txt) — typing props, components, DOM attributes
+- [svelte5_migration_svelte4to5.txt](./svelte5_migration_svelte4to5.txt) — what changed from Svelte 4 to 5
+- [svelte5_all_combined.txt](./svelte5_all_combined.txt) — everything above in one file (long, only use if you really need it)
 
 ### Usage
 
