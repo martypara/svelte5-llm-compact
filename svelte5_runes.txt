@@ -194,6 +194,29 @@
 <!-- - Using getter functions ensures the function always retrieves the latest values. -->
 
 
+<!-- ================================== -->
+<!-- Extra: Optional Getter/Setter Binding -->
+<!-- ================================== -->
+
+<!-- Shows how to bind an input to a reactive value with a custom getter/setter. -->
+
+<script>
+	let name = $state('Alice');
+</script>
+
+<input bind:value={
+	() => name,
+	(v) => name = v.trimStart()
+} />
+
+<p>Hello, {name}!</p>
+
+<!-- Notes:
+- This uses the new bind: syntax (Svelte 5.9+) with a getter and setter.
+- Useful for applying validation or transformation automatically.
+-->
+
+
 ---
 ## $Derived
 ---
