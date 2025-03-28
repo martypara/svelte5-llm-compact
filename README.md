@@ -1,8 +1,8 @@
 ## Svelte 5 for LLMs
 
-Getting LLMs to write Svelte 5 is hard — and it will stay that way until Svelte 5 code shows up in actual model training data. Until then, we’re stuck with partial understanding and workarounds.
+Getting LLMs to write Svelte 5 is hard and it will stay that way until Svelte 5 code shows up in actual model training data. Until then, we’re stuck with partial understanding and workarounds.
 
-Dumping full documentation doesn’t help. It’s too big, too noisy, and wastes tokens. Most models already understand Svelte 3 and 4 — and since Svelte 5 doesn't change everything, only the new pieces need to be shown.
+Dumping full documentation doesn’t help. It’s too big, too noisy, and wastes tokens. Most models already understand Svelte 3/4 and since Svelte 5 doesn't change everything, only the new pieces need to be shown.
 
 Even the official [`llms-small.txt`](https://svelte.dev/llms-small.txt) is over 130k tokens. That’s way beyond what models can reason over in a single prompt. The ideal context size is under 8k tokens. Pasting in too much usually makes things worse.
 
