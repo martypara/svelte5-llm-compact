@@ -17,7 +17,7 @@
 	}
 </script>
 
-<button on:click={() => greet(name)}>Greet</button>
+<button onclick={() => greet(name)}>Greet</button>
 
 ---
 
@@ -83,7 +83,7 @@
 </script>
 
 {#each items as item}
-	<button on:click={() => select(item)}>{item}</button>
+	<button onclick={() => select(item)}>{item}</button>
 {/each}
 
 ---
@@ -126,7 +126,7 @@
 	}
 </script>
 
-<button on:click={increment}>Count: {count}</button>
+<button onclick={increment}>Count: {count}</button>
 
 ---
 
@@ -160,7 +160,7 @@
 	import Button from './Button.svelte';
 </script>
 
-<Button on:click={() => alert('Clicked!')}>Click Me</Button>
+<Button onclick={() => alert('Clicked!')}>Click Me</Button>
 
 ---
 
