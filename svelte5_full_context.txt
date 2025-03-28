@@ -431,7 +431,7 @@ Note: For other events (e.g., `onmouseover`, `onfocus`), follow the same pattern
 </script>
 
 <FancyInput bind:value={message} bind:disabled={isDisabled} />
-<button on:click={() => isDisabled = !isDisabled}>
+<button onclick={() => isDisabled = !isDisabled}>
 	Toggle Disabled
 </button>
 
@@ -1033,7 +1033,7 @@ Note: For other events (e.g., `onmouseover`, `onfocus`), follow the same pattern
 	let count = $state(0);
 </script>
 
-<button on:click={() => count += 1}>
+<button onclick={() => count += 1}>
 	clicks (parent): {count}
 </button>
 
@@ -1046,7 +1046,7 @@ Note: For other events (e.g., `onmouseover`, `onfocus`), follow the same pattern
 	let { count } = $props();
 </script>
 
-<button on:click={() => count += 1}>
+<button onclick={() => count += 1}>
 	clicks (child): {count}
 </button>
 
@@ -1080,7 +1080,7 @@ Note: For other events (e.g., `onmouseover`, `onfocus`), follow the same pattern
 	let { object } = $props();
 </script>
 
-<button on:click={() => object.count += 1}>
+<button onclick={() => object.count += 1}>
 	clicks: {object.count}
 </button>
 
@@ -1116,7 +1116,7 @@ Note: For other events (e.g., `onmouseover`, `onfocus`), follow the same pattern
 	let { object } = $props();
 </script>
 
-<button on:click={() => object.count += 1}>
+<button onclick={() => object.count += 1}>
 	clicks: {object.count}
 </button>
 
